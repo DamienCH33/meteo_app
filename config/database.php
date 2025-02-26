@@ -1,20 +1,22 @@
 <?php
-    class Database {
-        private $host = 'localhost';
-        private $db_name = 'meteo_db';
-        private $username = 'root';
-        private $passeword = '';
-        public $conn;
+class Database {
+    private static $host = "localhost";
+    private static $dbname = "meteo_db";
+    private static $username = "root";
+    private static $password = "";
+    private static $pdo = null;
 
-        protected function getConnection() {
-            $this->conn = null;
-
-            try{
-                $this->conn = new PDO("mysql:host=" . $this->host. ";dbname=". $this->db_name, $this->username, $this->passeword);
-                $this->conn->exec("set name utf8");
-            }catch(PDOException $exception){
-                echo"Connection error:". $exception->getMessage();
+    public static function connect() {
+        if (self::$pdo === null) {
+            try {
+                self::$pdo = new PDO("mysql:host=" . self::$host . ";dbname=" . self::$dbname . ";charset=utf8", self::$username, self::$password);
+                self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                die("Erreur de connexion : " . $e->getMessage());
             }
-            return $this->conn;
         }
+        return self::$pdo;
     }
+}
+?>
